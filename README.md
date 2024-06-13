@@ -1,35 +1,30 @@
-# Etiketa
+# React + TypeScript + Vite
 
-## ROTEIRO DESENVOLVIMENTO
+This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 
-### FRONTEND: Braulio, Filipi A. Souza
+Currently, two official plugins are available:
 
-> framework frontend em `apps/frontend/`
+- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
+- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
 
-#### 1 - Etapa (11/06/2024):
+## Expanding the ESLint configuration
 
-[] tela de cadastro de usuario com nome, email e senha: `app.etiketa.com.br/signup`
+If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
 
-[] feedback visual erro tela de cadastro
+- Configure the top-level `parserOptions` property like this:
 
-[] tela de login: `app.etiketa.com.br/login`
+```js
+export default {
+  // other rules...
+  parserOptions: {
+    ecmaVersion: 'latest',
+    sourceType: 'module',
+    project: ['./tsconfig.json', './tsconfig.node.json'],
+    tsconfigRootDir: __dirname,
+  },
+}
+```
 
-[] feedback visual erro tela de login
-
-[] tela pós login (página interna da aplicação): `app.etiketa.com.br/home`
-
-[] A página interna da aplicação só deve ser acessível para usuários logados
-
-[] Ao fazer o login, a sessão do usuário deve se manter ativa por um período de tempo (uma semana)
-
-#### 2 - Etapa (19/06/2024):
-
-#### 3 - Etapa (26/06/2024):
-
-#### 4 - Etapa (03/07/2024):
-
-#### 5 - Etapa (11/06/2024)_OPCIONAL_:
-
-#### 6 - Conclusão (17/07/2024)
-
-> Ouvinte: Madson, Einstein Xavier
+- Replace `plugin:@typescript-eslint/recommended` to `plugin:@typescript-eslint/recommended-type-checked` or `plugin:@typescript-eslint/strict-type-checked`
+- Optionally add `plugin:@typescript-eslint/stylistic-type-checked`
+- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and add `plugin:react/recommended` & `plugin:react/jsx-runtime` to the `extends` list
