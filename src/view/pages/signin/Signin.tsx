@@ -1,12 +1,14 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useMutation } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
+import toast from "react-hot-toast";
 import { Link } from "react-router-dom";
 import { z } from "zod";
-import { userService } from "../../../app/services/users";
+import { useAuth } from "../../../app/hooks/useAuth";
+import { useSignin } from "../../../app/hooks/useSignin";
 import { Button } from "../../components/Button";
 import { ErrorStringFeedback } from "../../components/ErrorStringFeedback";
 import { InputLabel } from "../../components/InputLabel";
+import { Spinner } from "../../components/Spinner";
 import { UserSignIn } from "../../types";
 
 const schema = z.object({
@@ -25,17 +27,20 @@ export function Signin() {
 		resolver: zodResolver(schema),
 	});
 
-	const { mutateAsync } = useMutation({
-		mutationFn: (data: UserSignIn) => userService.signin(data),
-	});
+	const { mutateAsync, isPending } = useSignin();
 
-	const onSignin = async (dataf: UserSignIn) => {
-		console.log(dataf);
+	const { signin: signinCredentials } = useAuth();
+
+	const onSignin = async (dataForm: UserSignIn) => {
 		try {
-			const response = await mutateAsync(dataf);
-			console.log(response);
-		} catch (error) {
-			console.log(error);
+			const { token, account } = await mutateAsync(dataForm);
+			if (token && account) {
+				signinCredentials(token, account);
+			} else {
+				throw new Error("Dados de autenticação inválidos");
+			}
+		} catch (error: any) {
+			toast.error(error.message || "Ocorreu um erro ao fazer login");
 		}
 	};
 	return (
@@ -66,8 +71,8 @@ export function Signin() {
 					<ErrorStringFeedback message={errors?.password.message} />
 				)}
 
-				<Button type="submit" className="mt-10">
-					Login
+				<Button disabled={isPending} type="submit" className="mt-10">
+					{isPending ? <Spinner variant="md" /> : "Login"}
 				</Button>
 				<Link
 					className="flex h-10 items-center justify-center rounded-md border border-zinc-700 bg-transparent transition-opacity hover:opacity-80"

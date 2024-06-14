@@ -1,5 +1,5 @@
+import { DefaultProfile } from "../assets/DefaultProfile.tsx";
 import { UserInfoType } from "../types";
-
 interface UserInfoProps {
 	user: UserInfoType;
 }
@@ -15,9 +15,9 @@ export function UserInfo({ user }: UserInfoProps) {
 					{user.email}
 				</span>
 			</div>
-			<div className="bg-red h-10 w-10 rounded-full bg-white">
+			<div className="bg-red h-10 w-10 rounded-full">
 				{/* TODO: verificar sobre a imagem avatar e remover bg-white */}
-				{user.avatar}
+				<DefaultProfile />
 			</div>
 		</section>
 	);
