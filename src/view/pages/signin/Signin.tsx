@@ -1,4 +1,5 @@
 import { zodResolver } from "@hookform/resolvers/zod";
+import { AxiosResponse } from "axios";
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 import { Link } from "react-router-dom";
@@ -33,11 +34,20 @@ export function Signin() {
 
 	const onSignin = async (dataForm: UserSignIn) => {
 		try {
-			const { token, account } = await mutateAsync(dataForm);
+			const response: AxiosResponse<any> = await mutateAsync(dataForm);
+			const token = response.data.token;
+			const account = response.data.account;
+
 			if (token && account) {
 				signinCredentials(token, account);
 			} else {
-				throw new Error("Dados de autenticação inválidos");
+				if (response.status === 401) {
+					throw new Error("Dados de autenticação inválidos");
+				} else {
+					throw new Error(
+						response.data.message || "Ocorreu um erro ao fazer login",
+					);
+				}
 			}
 		} catch (error: any) {
 			toast.error(error.message || "Ocorreu um erro ao fazer login");

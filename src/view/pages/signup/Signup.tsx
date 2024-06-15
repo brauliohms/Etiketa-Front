@@ -1,4 +1,5 @@
 import { zodResolver } from "@hookform/resolvers/zod";
+import { AxiosResponse } from "axios";
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 import { Link, useNavigate } from "react-router-dom";
@@ -32,10 +33,26 @@ export function Signup() {
 
 	const onSubmitting = async (data: DataForm) => {
 		try {
-			await mutateAsync(data);
-			toast.success("Conta criada com sucesso");
-			navigate("/signin");
-			reset();
+			const response: AxiosResponse<any> = await mutateAsync(data);
+			if (response.status === 200) {
+				toast.success("Conta criada com sucesso");
+				navigate("/signin");
+				reset();
+			} else {
+				if (response.data.message === "Invalid password") {
+					throw new Error(
+						"Senha Inválida, a senha precisa precisa ter pelo menos um caractere especial, um número e uma letra maiúscula e uma letra minúscula",
+					);
+				} else if (response.data.message === "User already exists") {
+					throw new Error(
+						"E-mail já cadastrado, não é possível cadastrar o mesmo e-mail novamente",
+					);
+				} else {
+					throw new Error(
+						response.data.message || "Ocorreu um erro ao criar a conta",
+					);
+				}
+			}
 		} catch (err: any) {
 			toast.error(err.message || "Ocorreu um erro ao criar a conta");
 		}
