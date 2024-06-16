@@ -1,2 +1,2 @@
-export * from "./Tag";
+export * from "./TagMenuItem";
 export * from "./hooks";

@@ -1,19 +1,36 @@
-import { ReactNode } from "react";
+import { ReactNode, useEffect } from "react";
 import { EllipsisHorizontalIcon, PlusIcon } from "../../../../components/Icons";
 import { TagInterface } from "../../../../types";
+import { useTag } from "./hooks";
 
 interface TagProps {
-	delTag(index: number): void;
-	newChild(index: number): void;
+	delTag(parentIndex: number, childIndex?: number): void;
+	newChild(parentIndex: number): void;
 	tag: TagInterface;
 	index: number;
 	children?: ReactNode;
 }
 
-export function Tag({ newChild, delTag, tag, index, children }: TagProps) {
+export function TagMenuItem({
+	newChild,
+	delTag,
+	tag,
+	index,
+	children,
+}: TagProps) {
+	const { isTagMenuItemOpen, openTagMenuItem, closeTagMenuItem } = useTag();
+
+	useEffect(() => {
+		if (tag.child.length > 0) {
+			openTagMenuItem();
+		} else {
+			closeTagMenuItem();
+		}
+	}, [closeTagMenuItem, openTagMenuItem, tag.child.length]);
+
 	return (
 		<details
-			// open
+			open={isTagMenuItemOpen}
 			key={index}
 			className="group max-h-[40px] w-full overflow-hidden rounded-md transition-[max-height] duration-500 open:!max-h-fit"
 		>
@@ -36,11 +53,13 @@ export function Tag({ newChild, delTag, tag, index, children }: TagProps) {
 			</summary>
 			<div className="mt-4 px-4 text-base text-white">
 				{tag.child.map((childTag, childIndex) => (
-					<Tag
+					<TagMenuItem
 						key={`${index}-${childIndex}`}
-						delTag={delTag}
+						// delTag={delTag}
+						delTag={() => delTag(index, childIndex)}
 						index={childIndex}
-						newChild={newChild}
+						// newChild={newChild}
+						newChild={() => newChild(childIndex)}
 						tag={childTag}
 					/>
 				))}

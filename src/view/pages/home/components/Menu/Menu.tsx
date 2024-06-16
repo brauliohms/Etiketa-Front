@@ -1,6 +1,6 @@
 import { Button } from "../../../../components/Button";
 import { ConfIcon, PlusIcon, UserIcon } from "../../../../components/Icons";
-import { Tag, useTag } from "../Tag";
+import { TagMenuItem, useTag } from "../Tag";
 import { MenuItem } from "./MenuItem";
 
 export function Menu() {
@@ -13,7 +13,7 @@ export function Menu() {
 			<h3 className="invisible text-base text-white lg:visible">SUPERTAGS</h3>
 			<section className="mb-4 flex flex-col gap-y-4">
 				{tagsState.map((tag, index) => (
-					<Tag
+					<TagMenuItem
 						key={index}
 						delTag={delTag}
 						index={index}
