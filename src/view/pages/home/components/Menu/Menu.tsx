@@ -3,7 +3,11 @@ import { ConfIcon, PlusIcon, UserIcon } from "../../../../components/Icons";
 import { TagMenuItem, useTag } from "../Tag";
 import { MenuItem } from "./MenuItem";
 
-export function Menu() {
+interface MenuProps {
+	setSelectedTag(id: string): void;
+}
+
+export function Menu({ setSelectedTag }: MenuProps) {
 	const { delTag, newChild, newTag, tagsState } = useTag();
 
 	return (
@@ -19,6 +23,7 @@ export function Menu() {
 						index={index}
 						newChild={newChild}
 						tag={tag}
+						setSelectedTag={setSelectedTag}
 					/>
 				))}
 			</section>

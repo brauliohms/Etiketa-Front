@@ -14,7 +14,7 @@ export interface PropertiesInterface {
 }
 
 export interface TagInterface {
-	id?: string;
+	id: string;
 	name: string;
 	icon: string;
 	properties: PropertiesInterface[];

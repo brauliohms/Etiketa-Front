@@ -1,9 +1,14 @@
 import { useCallback, useState } from "react";
+import { Id } from "../../../../../../app/common";
 import { TagInterface } from "../../../../../types";
 
 export function useTag() {
 	const [tagsState, setTagsState] = useState<TagInterface[]>([]);
 	const [isTagMenuItemOpen, setIsTagMenuItemOpen] = useState<boolean>(false);
+	const [selectedTag, setSelectedtag] = useState<string>("");
+
+	const handleSelectTag = useCallback((id: string) => setSelectedtag(id), []);
+	const cleanSelectTag = useCallback(() => setSelectedtag(""), []);
 
 	const closeTagMenuItem = useCallback(() => setIsTagMenuItemOpen(false), []);
 	const openTagMenuItem = useCallback(() => setIsTagMenuItemOpen(true), []);
@@ -12,7 +17,13 @@ export function useTag() {
 		setTagsState((tagsStateAtualizada) => {
 			return [
 				...tagsStateAtualizada,
-				{ id: "", name: "Sem Título", icon: "#️⃣", properties: [], child: [] },
+				{
+					id: Id.gerar(),
+					name: "Sem Título",
+					icon: "#️⃣",
+					properties: [],
+					child: [],
+				},
 			];
 		});
 	};
@@ -53,7 +64,7 @@ export function useTag() {
 							child: [
 								...tag.child,
 								{
-									id: "",
+									id: Id.gerar(),
 									name: "Sem Título",
 									icon: "#️⃣",
 									properties: [],
@@ -124,5 +135,8 @@ export function useTag() {
 		isTagMenuItemOpen,
 		closeTagMenuItem,
 		openTagMenuItem,
+		selectedTag,
+		handleSelectTag,
+		cleanSelectTag,
 	};
 }
