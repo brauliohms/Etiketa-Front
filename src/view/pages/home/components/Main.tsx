@@ -1,8 +1,12 @@
-export function Main() {
+interface MainProps {
+	tagId?: string;
+}
+
+export function Main({ tagId }: MainProps) {
 	return (
-		<main className="flex w-full items-center justify-center">
+		<main className="container mx-auto flex flex-col items-center justify-center gap-8">
 			<h2 className="text-center text-2xl font-semibold text-zinc-500">
-				Nenhuma SuperTag criada
+				{tagId ? tagId : "Nenhuma SuperTag criada"}
 			</h2>
 		</main>
 	);
