@@ -44,15 +44,15 @@ export function TagMenuItem({
 					<span className="ml-4">{tag.icon}</span>
 					<span className="text-white">{tag.name}</span>
 				</div>
-				<div className="flex items-center gap-1">
-					<button onClick={() => delTag(index)}>
-						<EllipsisHorizontalIcon className="w-4 transition hover:stroke-white" />
+				<div className="flex items-center gap-2">
+					<button onClick={() => delTag(index)} className="rounded-full hover:bg-gray-700">
+						<EllipsisHorizontalIcon className="w-5 transition text-gray-400 hover:stroke-white" />
 					</button>
 					<button
 						onClick={() => newChild(index)}
-						className="text-center hover:text-white"
+						className="rounded-full hover:bg-gray-700"
 					>
-						<PlusIcon className="w-4 transition hover:stroke-white" />
+						<PlusIcon className="w-5 transition text-gray-400 hover:stroke-white" />
 					</button>
 				</div>
 			</summary>
