@@ -1,14 +1,14 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useMutation } from "@tanstack/react-query";
+import { AxiosResponse } from "axios";
 import { useForm } from "react-hook-form";
-import { Link } from "react-router-dom";
+import toast from "react-hot-toast";
+import { Link, useNavigate } from "react-router-dom";
 import { z } from "zod";
-import { userService } from "../../../app/services/users";
+import { useSignup } from "../../../app/hooks/useSignup";
 import { Button } from "../../components/Button";
 import { ErrorStringFeedback } from "../../components/ErrorStringFeedback";
 import { InputLabel } from "../../components/InputLabel";
 import { Spinner } from "../../components/Spinner";
-import { UserSignUp } from "../../types";
 
 const schema = z.object({
 	name: z.string().min(1, "Seu nome não pode ser vazio."),
@@ -22,21 +22,39 @@ export function Signup() {
 	const {
 		register,
 		handleSubmit,
+		reset,
 		formState: { errors },
 	} = useForm<DataForm>({
 		resolver: zodResolver(schema),
 	});
 
-	const { mutateAsync, isPending } = useMutation({
-		mutationFn: async (data: UserSignUp) => userService.signup(data),
-	});
+	const { mutateAsync, isPending } = useSignup();
+	const navigate = useNavigate();
 
 	const onSubmitting = async (data: DataForm) => {
-		console.log(data);
 		try {
-			await mutateAsync(data);
-		} catch (err) {
-			console.log(err);
+			const response: AxiosResponse<any> = await mutateAsync(data);
+			if (response.status === 200) {
+				toast.success("Conta criada com sucesso");
+				navigate("/signin");
+				reset();
+			} else {
+				if (response.data.message === "Invalid password") {
+					throw new Error(
+						"Senha Inválida, a senha precisa precisa ter pelo menos um caractere especial, um número e uma letra maiúscula e uma letra minúscula",
+					);
+				} else if (response.data.message === "User already exists") {
+					throw new Error(
+						"E-mail já cadastrado, não é possível cadastrar o mesmo e-mail novamente",
+					);
+				} else {
+					throw new Error(
+						response.data.message || "Ocorreu um erro ao criar a conta",
+					);
+				}
+			}
+		} catch (err: any) {
+			toast.error(err.message || "Ocorreu um erro ao criar a conta");
 		}
 	};
 	return (
@@ -70,7 +88,7 @@ export function Signup() {
 					<ErrorStringFeedback message={errors?.password.message} />
 				)}
 
-				<Button type="submit" className="mt-10">
+				<Button disabled={isPending} type="submit" className="mt-10">
 					{isPending ? <Spinner variant="md" /> : "Registrar"}
 				</Button>
 				<Link
