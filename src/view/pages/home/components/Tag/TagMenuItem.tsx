@@ -1,37 +1,19 @@
-import { ReactNode, useEffect } from "react";
+import { useEffect } from "react";
 import { Id } from "../../../../../app/common";
+import { useAuth } from "../../../../../app/hooks/useAuth";
 import { useTagStore } from "../../../../../store/TagStore";
 import { EllipsisHorizontalIcon, PlusIcon } from "../../../../components/Icons";
 import { TagInterface } from "../../../../types";
 import { useTag } from "./hooks";
 
 interface TagProps {
-	// delTag(id: string, childIndex?: number): void;
-	newChild(id: string, childIndex?: number): void;
-	// setSelectedTag(id: string): void;
 	tag: TagInterface;
-	index: string;
-	children?: ReactNode;
 }
 
-export function TagMenuItem({
-	newChild,
-	// delTag,
-	// setSelectedTag,
-	tag,
-	index,
-	children,
-}: TagProps) {
+export function TagMenuItem({ tag }: TagProps) {
+	const { user } = useAuth();
 	const { isTagMenuItemOpen, openTagMenuItem, closeTagMenuItem } = useTag();
-	const { handleSelectTag, removeTag } = useTagStore();
-
-	const tagInicial: TagInterface = {
-		id: Id.gerar(),
-		name: "Sem Título",
-		icon: "#️⃣",
-		properties: [],
-		child: [],
-	};
+	const { handleSelectTag, tags, updateTags } = useTagStore();
 
 	useEffect(() => {
 		if (tag.child.length > 0) {
@@ -41,10 +23,55 @@ export function TagMenuItem({
 		}
 	}, [closeTagMenuItem, openTagMenuItem, tag.child.length]);
 
-	function addChildTag(tag: TagInterface): TagInterface {
-		tag.child = [...tag.child, tagInicial];
-		return tag;
+	// Funções para adicionar/remover tags de forma recursiva --------------------
+	function addChildTag(parentId: string, tags: TagInterface[]): TagInterface[] {
+		return tags.map((tag) => {
+			if (tag.id === parentId) {
+				return {
+					...tag,
+					child: [
+						...tag.child,
+						{
+							id: Id.gerar(),
+							user_id: user!.accountId,
+							name: "Sem Título",
+							icon: "#️⃣",
+							properties: [],
+							child: [],
+						},
+					],
+				};
+			} else if (tag.child.length > 0) {
+				return {
+					...tag,
+					child: addChildTag(parentId, tag.child),
+				};
+			}
+			return tag;
+		});
 	}
+
+	function removeTag(tagId: string, tags: TagInterface[]): TagInterface[] {
+		return tags
+			.filter((tag) => tag.id !== tagId)
+			.map((tag) => ({
+				...tag,
+				child: removeTag(tagId, tag.child),
+			}));
+	}
+	// ---------------------------------------------------------------------------
+
+	// Funções para manipular todas as tags após adicionar/remover ---------------
+	function handleAddChildTag(id: string): void {
+		const newArrayTags = addChildTag(id, tags);
+		updateTags(newArrayTags);
+	}
+
+	function handleRemoveTag(id: string): void {
+		const newArrayTags = removeTag(id, tags);
+		updateTags(newArrayTags);
+	}
+	// ---------------------------------------------------------------------------
 
 	return (
 		<details
@@ -61,13 +88,13 @@ export function TagMenuItem({
 				</div>
 				<div className="flex items-center gap-2">
 					<button
-						onClick={() => removeTag(tag.id)}
+						onClick={() => handleRemoveTag(tag.id)}
 						className="rounded-full hover:bg-gray-700"
 					>
 						<EllipsisHorizontalIcon className="w-5 text-gray-400 transition hover:stroke-white" />
 					</button>
 					<button
-						onClick={() => newChild(id)}
+						onClick={() => handleAddChildTag(tag.id)}
 						className="rounded-full hover:bg-gray-700"
 					>
 						<PlusIcon className="w-5 text-gray-400 transition hover:stroke-white" />
@@ -75,19 +102,9 @@ export function TagMenuItem({
 				</div>
 			</summary>
 			<div className="mt-4 px-4 text-base text-white">
-				{/* {tag.child.map((childTag, childIndex) => (
-					<TagMenuItem
-						key={`${id}-${childIndex}`}
-						// delTag={delTag}
-						delTag={() => delTag(id)}
-						id={id}
-						// newChild={newChild}
-						newChild={() => newChild(id)}
-						tag={childTag}
-						setSelectedTag={setSelectedTag}
-					/>
-				))} */}
-				{children}
+				{tag.child.map((childTag) => (
+					<TagMenuItem key={childTag.id} tag={childTag} />
+				))}
 			</div>
 		</details>
 	);

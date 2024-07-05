@@ -7,25 +7,30 @@ interface TagState {
 	selectedTag: string;
 	handleSelectTag: (id: string) => void;
 	cleanSelectedTag: () => void;
-	addTag: () => void;
+	addTag: (user_id: string) => void;
 	removeTag: (id: string) => void;
 	updateTags: (tags: TagInterface[]) => void;
 }
-
-const tagInicial: TagInterface = {
-	id: Id.gerar(),
-	name: "Sem Título",
-	icon: "#️⃣",
-	properties: [],
-	child: [],
-};
 
 export const useTagStore = create<TagState>((set) => ({
 	tags: [],
 	selectedTag: "",
 	handleSelectTag: (id) => set(() => ({ selectedTag: id })),
 	cleanSelectedTag: () => set(() => ({ selectedTag: "" })),
-	addTag: () => set((state) => ({ tags: [...state.tags, tagInicial] })),
+	addTag: (user_id) =>
+		set((state) => ({
+			tags: [
+				...state.tags,
+				{
+					id: Id.gerar(),
+					user_id,
+					name: "Sem Título",
+					icon: "#️⃣",
+					properties: [],
+					child: [],
+				},
+			],
+		})),
 	removeTag: (id) =>
 		set((state) => ({ tags: state.tags.filter((item) => item.id !== id) })),
 	updateTags: (newTags) => set({ tags: newTags }),
