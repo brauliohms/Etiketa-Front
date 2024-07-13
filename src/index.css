@@ -7,3 +7,21 @@
 		font-family: "Inter", sans-serif;
 	}
 }
+
+@layer components {
+	.inputBase {
+		@apply appearance-none border-0 bg-transparent py-2 text-zinc-400 outline-none focus:outline-none focus:ring-0;
+	}
+
+	.inputBorder {
+		@apply border-b-2 border-zinc-600 text-xl font-bold focus:border-zinc-600;
+	}
+
+	.input {
+		@apply inputBase text-4xl font-black;
+	}
+
+	.label {
+		@apply text-zinc-600;
+	}
+}
