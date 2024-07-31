@@ -1,5 +1,5 @@
 export type UserInfoType = {
-	accountId?: string;
+	accountId: string;
 	name: string;
 	email: string;
 	avatar?: string;
